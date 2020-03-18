@@ -18,11 +18,7 @@ result = curs.execute(query).fetchall()
 print('Question 1: How many total Characters are there?')
 print('TOTAL NUMBER OF CHARACTERS: ', result[0][0], '\n')
 
-curs.close()
-conn.commit()
-
 # Question 2: How many of each specific subclass?
-curs0 = conn.cursor()
 
 query0 = '''
 SELECT 'total_avatars' AS class_name
@@ -56,31 +52,23 @@ SELECT 'fighters' AS class_name
 FROM charactercreator_fighter f;
 '''
 
-result0 = curs0.execute(query0).fetchall()
+result0 = curs.execute(query0).fetchall()
 df = pd.DataFrame(result0, columns=['subclass_name','class_count'])
 print('Question 2: How many of each specific subclass?')
 print(df, '\n')
 
-curs0.close()
-conn.commit()
-
 # Question 3: How many total Items?
-curs1 = conn.cursor()
 
 query1 = '''
 SELECT COUNT (DISTINCT ai.item_id) AS total_items
 FROM armory_item ai;
 '''
 
-result1 = curs1.execute(query1).fetchall()
+result1 = curs.execute(query1).fetchall()
 print('Question 3: How many total Items?')
 print(result1[0][0], 'total items \n')
 
-curs1.close()
-conn.commit()
-
 # Question 4a: How many of the Items are weapons?
-curs2 = conn.cursor()
 
 query2 = '''
 SELECT SUM(w.item_ptr_id IS NULL) AS non_weapons
@@ -90,7 +78,7 @@ LEFT JOIN armory_weapon w
 ON ai.item_id = w.item_ptr_id;
 '''
 
-result2 = curs2.execute(query2).fetchall()
+result2 = curs.execute(query2).fetchall()
 print('Question 4a: How many of the Items are weapons?')
 print(result2[0][1], 'items are weapons \n')
 
@@ -99,11 +87,7 @@ print(result2[0][1], 'items are weapons \n')
 print('Question 4b: How many of the Items are NOT weapons?')
 print(result2[0][0], 'armory items are NOT weapons \n')
 
-curs2.close()
-conn.commit()
-
 # Question 5: How many Items does each character have? (Return first 20 rows)?
-curs3 = conn.cursor()
 
 query3 = '''
 SELECT
@@ -121,7 +105,7 @@ ORDER BY item_count DESC, weapon_count DESC
 LIMIT 20;
 '''
 
-result3 = curs3.execute(query3).fetchall()
+result3 = curs.execute(query3).fetchall()
 df0 = pd.DataFrame(
     result3,
     columns=['pin','avatar', 'item_count', 'weapon_count']
@@ -132,5 +116,68 @@ print(
      )
 print(df0, '\n')
 
-curs3.close()
+# Question 6: How many Weapons does each character have? (Return first 20 rows)
+
+query4 = '''
+SELECT
+c.character_id as pin
+,c.name as avatar
+,COUNT (w.item_ptr_id) AS weapon_count
+FROM charactercreator_character c
+LEFT JOIN charactercreator_character_inventory inv
+ON inv.character_id = c.character_id
+LEFT JOIN armory_weapon w
+ON inv.item_id = w.item_ptr_id
+GROUP BY pin
+ORDER BY weapon_count DESC
+LIMIT 20;
+'''
+
+result4 = curs.execute(query4).fetchall()
+df1 = pd.DataFrame(
+    result4,
+    columns=['pin','avatar', 'weapon_count']
+    )
+print(
+    'Question 6: How many Weapons does each character have?',
+    ' (Return first 20 rows)'
+     )
+print(df1, '\n')
+
+# Question 7: On average, how many Items does each Character have?
+
+query5 = '''
+SELECT
+COUNT(DISTINCT inv.id) / COUNT(DISTINCT c.character_id) AS average_items
+FROM charactercreator_character c, charactercreator_character_inventory inv;
+'''
+
+result5 = curs.execute(query5).fetchall()
+print('Question 7: On average, how many Items does each Character have?')
+print(f'An average avatar has {result5[0][0]} items. \n')
+
+# Question 8: On average, how many Weapons does each character have?
+
+query6 = '''
+SELECT avg(weapon_count)
+FROM (
+SELECT
+c.character_id as pin
+,c.name as avatar
+,COUNT (w.item_ptr_id) AS weapon_count
+FROM charactercreator_character c
+LEFT JOIN charactercreator_character_inventory inv
+ON inv.character_id = c.character_id
+LEFT JOIN armory_weapon w
+ON inv.item_id = w.item_ptr_id
+GROUP BY pin
+ORDER BY weapon_count DESC
+);
+'''
+
+result6 = curs.execute(query6).fetchall()
+print('Question 8: On average, how many Weapons does each Character have?')
+print(f'An average avatar has {result6[0][0]} weapons. \n')
+
+curs.close()
 conn.commit()
