@@ -101,3 +101,36 @@ print(result2[0][0], 'armory items are NOT weapons \n')
 
 curs2.close()
 conn.commit()
+
+# Question 5: How many Items does each character have? (Return first 20 rows)?
+curs3 = conn.cursor()
+
+query3 = '''
+SELECT
+c.character_id as pin
+,c.name as avatar
+,COUNT (inv.item_id) AS item_count
+,COUNT (w.item_ptr_id) AS weapon_count
+FROM charactercreator_character c
+LEFT JOIN charactercreator_character_inventory inv
+ON inv.character_id = c.character_id
+LEFT JOIN armory_weapon w
+ON inv.item_id = w.item_ptr_id
+GROUP BY pin
+ORDER BY item_count DESC, weapon_count DESC
+LIMIT 20;
+'''
+
+result3 = curs3.execute(query3).fetchall()
+df0 = pd.DataFrame(
+    result3,
+    columns=['pin','avatar', 'item_count', 'weapon_count']
+    )
+print(
+    'Question 5: How many Items does each character have?',
+    ' (Return first 20 rows)'
+     )
+print(df0, '\n')
+
+curs3.close()
+conn.commit()
