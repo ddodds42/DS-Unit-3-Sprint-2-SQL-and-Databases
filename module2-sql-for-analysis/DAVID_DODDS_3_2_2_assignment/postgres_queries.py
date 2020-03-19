@@ -12,7 +12,7 @@ SERVER = os.getenv('SERVER', default='woops')
 conn = psycopg2.connect(dbname=DB_NAME,
                         user=THIS_GUY,
                         password=TREEHOUSE,
-                        host='drona.db.elephantsql.com')
+                        host=SERVER)
 
 curs = conn.cursor()
 
