@@ -20,3 +20,6 @@ curs.execute('SELECT * from toy_table;')
 
 result = curs.fetchone()
 print('RESULT: ', result)
+
+curs.close()
+conn.commit()
