@@ -127,11 +127,27 @@ Part 4 - Questions (and your Answers)
 Answer the following questions, baseline ~3-5 sentences each, as if they 
 were interview screening questions (a form you fill when applying for a job):
 
-In the Northwind database, what is the type of relationship between the 
-Employee and Territory tables?
-What is a situation where a document store (like MongoDB) is appropriate, 
-and what is a situation where it is not appropriate?
-What is "NewSQL", and what is it trying to achieve?
+# In the Northwind database, what is the type of relationship between the 
+# Employee and Territory tables?
+## In the northwind database, the tables 'Employee' and 'EmployeeTerritory'
+## are related as such: An employee may work one or many territories.
+## However, a territory has one and only one employee working it.
+
+# What is a situation where a document store (like MongoDB) is appropriate, 
+# and what is a situation where it is not appropriate?
+## If a company or project is in the infant stages of taking in its very
+## first swaths of data, that data may not be as structured, curated, or even
+## knowable. In that case, we would want to use MongoDB, which more flexibly
+## imports yet untamed data. This is especially true if UX and backend
+## colleagues are still iterating the feilds of data that we will be
+## recieving. MongoDB is also preferable for gigantic data because it can
+## be queried faster and more flexibly.
+
+# What is "NewSQL", and what is it trying to achieve?
+## NewSQL is an attempt to overcome the scalability shortcomings if
+## relational SQL databases in handling big data. It is therefore also
+## attempting to overcome the structure and organizability lost when using
+## the more flexible and faster, but often messier, Non-relational databases.
 
 
 
